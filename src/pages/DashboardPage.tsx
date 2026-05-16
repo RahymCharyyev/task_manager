@@ -23,7 +23,8 @@ import { CreateTaskModal } from '../components/CreateTaskModal'
 import { taskStore } from '../stores/taskStore'
 
 export const DashboardPage = observer(function DashboardPage() {
-  const tasksQuery = useTasksQuery()
+  const { listPage, pageSize, filters: { search } } = taskStore
+  const tasksQuery = useTasksQuery(listPage, pageSize, search.trim())
   const createMutation = useCreateTaskMutation()
   const updateMutation = useUpdateTaskMutation()
   const deleteMutation = useDeleteTaskMutation()
@@ -56,7 +57,7 @@ export const DashboardPage = observer(function DashboardPage() {
       <Flex justify="space-between" align="flex-start" gap="middle" wrap>
         <Typography.Paragraph
           type="secondary"
-          className="max-w-prose text-pretty"
+          className="max-w-prose text-pretty text-base opacity-80"
           style={{ marginBottom: 0 }}
         >
           Data from{' '}
@@ -72,6 +73,8 @@ export const DashboardPage = observer(function DashboardPage() {
         </Typography.Paragraph>
         <Button
           type="primary"
+          size="large"
+          className="gradient-bg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-300 font-semibold"
           icon={
             <span aria-hidden>
               <PlusOutlined />

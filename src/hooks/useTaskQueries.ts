@@ -2,6 +2,7 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  keepPreviousData,
 } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import type { TasksPageResult } from '../api/tasks'
@@ -24,15 +25,12 @@ function tasksListQueryKey() {
   })
 }
 
-export function useTasksQuery() {
-  const page = taskStore.listPage
-  const pageSize = taskStore.pageSize
-  const search = taskStore.filters.search.trim()
+export function useTasksQuery(page: number, pageSize: number, search: string) {
 
   const query = useQuery({
     queryKey: queryKeys.tasksList({ page, pageSize, search }),
     queryFn: () => fetchTasksPage({ page, pageSize, search }),
-    placeholderData: (previousData) => previousData,
+    placeholderData: keepPreviousData,
   })
 
   useEffect(() => {

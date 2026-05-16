@@ -1,6 +1,12 @@
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Card, Descriptions, Flex, Select, Space, Tag, Typography } from 'antd'
+import { Button, Card, Descriptions, Flex, Dropdown, Space, Tag, Typography } from 'antd'
+import { 
+  DeleteOutlined, 
+  CheckCircleOutlined, 
+  ClockCircleOutlined, 
+  MinusCircleOutlined 
+} from '@ant-design/icons'
 import type { Task, TaskPriority, TaskStatus } from '../types/task'
 import { formatDateTime } from '../utils/formatDate'
 import { priorityLabel, statusLabel } from '../utils/labels'
@@ -18,6 +24,12 @@ type TaskCardProps = {
   statusBusy?: boolean
 }
 
+const StatusIcon = ({ status }: { status: TaskStatus }) => {
+  if (status === 'DONE') return <CheckCircleOutlined className="text-emerald-500" />
+  if (status === 'IN_PROGRESS') return <ClockCircleOutlined className="text-amber-500" />
+  return <MinusCircleOutlined className="text-slate-400" />
+}
+
 export const TaskCard = memo(function TaskCard({
   task,
   onStatusChange,
@@ -28,8 +40,8 @@ export const TaskCard = memo(function TaskCard({
     <Card
       size="small"
       hoverable
-      className="motion-card-hover border-slate-200/90 shadow-sm transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md dark:border-white/10"
-      styles={{ body: { paddingBottom: 12 } }}
+      className="glass-card !border-0"
+      styles={{ body: { paddingBottom: 12, paddingTop: 16, paddingLeft: 20, paddingRight: 20 } }}
     >
       <Flex vertical gap="middle">
         <Flex justify="space-between" align="flex-start" gap="middle" wrap>
@@ -37,7 +49,7 @@ export const TaskCard = memo(function TaskCard({
             <Space wrap align="center">
               <Link
                 to={`/tasks/${task.id}`}
-                className="block min-w-0 max-w-full rounded-sm text-base font-semibold leading-snug text-[var(--ant-color-link)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ant-color-primary)]"
+                className="block min-w-0 max-w-full rounded-sm text-lg font-heading font-semibold leading-snug text-slate-800 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 <span className="text-pretty">{task.title}</span>
               </Link>
@@ -53,27 +65,39 @@ export const TaskCard = memo(function TaskCard({
               {task.description || '—'}
             </Typography.Paragraph>
           </Space>
-          <Space direction="vertical" align="end">
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              Status
-            </Typography.Text>
-            <Select
-              style={{ width: 160 }}
+          <Space align="center" size={8}>
+            <Dropdown
               disabled={statusBusy}
-              value={task.status}
-              options={[
-                { value: 'TODO', label: statusLabel('TODO') },
-                {
-                  value: 'IN_PROGRESS',
-                  label: statusLabel('IN_PROGRESS'),
-                },
-                { value: 'DONE', label: statusLabel('DONE') },
-              ]}
-              onChange={(v) => onStatusChange(task.id, v as TaskStatus)}
+              trigger={['click']}
+              menu={{
+                items: [
+                  { key: 'TODO', icon: <MinusCircleOutlined />, label: statusLabel('TODO') },
+                  { key: 'IN_PROGRESS', icon: <ClockCircleOutlined />, label: statusLabel('IN_PROGRESS') },
+                  { key: 'DONE', icon: <CheckCircleOutlined />, label: statusLabel('DONE') },
+                ],
+                onClick: ({ key }) => onStatusChange(task.id, key as TaskStatus),
+              }}
+            >
+              <Button 
+                type="text" 
+                size="middle" 
+                loading={statusBusy} 
+                icon={<StatusIcon status={task.status} />}
+                className="hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <span className="hidden sm:inline font-medium">{statusLabel(task.status)}</span>
+              </Button>
+            </Dropdown>
+            
+            <Button 
+              danger 
+              type="text" 
+              size="middle" 
+              icon={<DeleteOutlined />} 
+              onClick={() => onDelete(task)} 
+              className="hover:bg-red-50 dark:hover:bg-red-950/30"
+              title="Delete Task"
             />
-            <Button danger size="small" onClick={() => onDelete(task)}>
-              Delete Task
-            </Button>
           </Space>
         </Flex>
         <Descriptions size="small" column={{ xs: 1, sm: 3 }}>

@@ -25,8 +25,8 @@ export const TaskFilters = observer(function TaskFilters() {
   return (
     <Card
       size="small"
-      title={<span className="font-medium tracking-tight">Filters</span>}
-      className="shadow-sm ring-1 ring-slate-900/[0.06] dark:ring-white/10"
+      title={<span className="font-heading font-semibold text-slate-800 dark:text-slate-100 tracking-tight">Filters</span>}
+      className="glass-card !border-0 mb-6"
     >
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>

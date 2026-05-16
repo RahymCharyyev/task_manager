@@ -30,21 +30,19 @@ export const DashboardLayout = observer(function DashboardLayout() {
     <>
       <SkipToMain />
       <Layout
-        className="min-h-svh antialiased"
-        style={{ minHeight: '100vh', background: token.colorBgLayout }}
+        className="min-h-svh antialiased bg-slate-50 dark:bg-[#0f172a] relative overflow-hidden"
       >
+        {/* Decorative background blobs */}
+        <div className="absolute top-0 left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-500/10 blur-[120px] pointer-events-none" />
         <Sider
           breakpoint="lg"
           collapsedWidth={0}
-          width={232}
-          className="flex flex-col shadow-[4px_0_24px_-12px_rgba(15,23,42,0.15)] dark:shadow-[4px_0_24px_-12px_rgba(0,0,0,0.45)] lg:border-e lg:border-slate-200/80 dark:lg:border-white/10"
-          style={{
-            borderInlineEnd: `1px solid ${token.colorBorderSecondary}`,
-            background: token.colorBgContainer,
-          }}
+          width={260}
+          className="flex flex-col glass z-10 border-e border-white/20 dark:border-white/10"
         >
           <div className="px-5 pt-6 pb-4">
-            <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+            <Typography.Text className="font-heading font-bold tracking-widest text-indigo-500 dark:text-indigo-400" style={{ fontSize: 13 }}>
               MINI TASKS
             </Typography.Text>
             <Typography.Paragraph
@@ -93,22 +91,12 @@ export const DashboardLayout = observer(function DashboardLayout() {
         </Sider>
         <Layout>
           <Header
-            className="sticky top-0 z-20 shadow-sm shadow-slate-900/5 backdrop-blur-md dark:shadow-black/40"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingInline: token.paddingLG,
-              background: token.colorBgContainer,
-              borderBottom: `1px solid ${token.colorBorderSecondary}`,
-              height: 'auto',
-              lineHeight: token.lineHeight,
-              paddingBlock: token.paddingSM,
-            }}
+            className="sticky top-0 z-20 glass flex items-center justify-between border-b border-white/20 dark:border-white/10 px-6 py-3"
+            style={{ height: 'auto', lineHeight: token.lineHeight }}
           >
             <Typography.Title
               level={4}
-              className="text-balance !mb-0 !font-semibold tracking-tight"
+              className="text-balance !mb-0 font-heading !font-semibold tracking-tight gradient-text"
               style={{ margin: 0 }}
             >
               Dashboard
@@ -124,13 +112,10 @@ export const DashboardLayout = observer(function DashboardLayout() {
             </Space>
           </Header>
           <Content
-            className="mx-auto w-full max-w-6xl shadow-md shadow-slate-900/5 ring-1 ring-slate-900/[0.06] transition-[box-shadow] duration-300 dark:shadow-black/40 dark:ring-white/10"
+            className="mx-auto w-full max-w-6xl glass-card rounded-2xl relative z-10"
             style={{
-              margin: token.marginLG,
-              padding: token.paddingLG,
-              background: token.colorBgContainer,
-              borderRadius: token.borderRadiusLG,
-              border: `1px solid ${token.colorBorderSecondary}`,
+              margin: '24px',
+              padding: '24px',
               minHeight: 280,
             }}
           >

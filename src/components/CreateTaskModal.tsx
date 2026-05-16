@@ -44,7 +44,7 @@ export function CreateTaskModal({
 
   return (
     <Modal
-      title="Create Task"
+      title={<span className="font-heading text-xl font-semibold gradient-text tracking-tight">Create Task</span>}
       open={open}
       onCancel={() => {
         if (!submitting) onClose()

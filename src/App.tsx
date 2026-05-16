@@ -5,8 +5,6 @@ import { queryClient } from './queryClient'
 import { AppRoutes } from './routes/AppRoutes'
 import { themeStore } from './stores/themeStore'
 
-const fontStack =
-  "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
 const AppShell = observer(function AppShell() {
   const isDark = themeStore.isDark
@@ -18,20 +16,44 @@ const AppShell = observer(function AppShell() {
           ? antdTheme.darkAlgorithm
           : antdTheme.defaultAlgorithm,
         token: {
-          borderRadiusLG: 12,
-          borderRadius: 10,
-          colorPrimary: '#1677ff',
-          fontFamily: fontStack,
-          lineHeight: 1.55,
+          borderRadiusLG: 16,
+          borderRadius: 12,
+          borderRadiusSM: 8,
+          colorPrimary: '#6366f1',
+          colorInfo: '#6366f1',
+          colorSuccess: '#10b981',
+          colorWarning: '#f59e0b',
+          colorError: '#ef4444',
+          fontFamily: "'Inter', sans-serif",
+          lineHeight: 1.6,
+          controlHeight: 40,
         },
         components: {
           Layout: {
             headerPadding: '14px 24px',
-            headerHeight: 56,
+            headerHeight: 64,
+            headerBg: 'transparent',
+            bodyBg: 'transparent',
+            siderBg: 'transparent',
           },
           Card: {
-            headerFontSize: 15,
+            headerFontSize: 16,
+            borderRadiusLG: 16,
           },
+          Button: {
+            controlHeight: 40,
+            borderRadius: 10,
+            colorPrimaryHover: '#4f46e5',
+            colorPrimaryActive: '#4338ca',
+          },
+          Input: {
+            controlHeight: 40,
+            borderRadius: 10,
+          },
+          Select: {
+            controlHeight: 40,
+            borderRadius: 10,
+          }
         },
       }}
     >
