@@ -1,69 +1,76 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { Card, Col, Input, Row, Select, Typography } from 'antd'
-import { observer } from 'mobx-react-lite'
-import type { PriorityFilter, StatusFilter } from '../types/task'
-import { taskStore } from '../stores/taskStore'
-import { priorityLabel } from '../utils/labels'
-
-const statusOptions: { value: StatusFilter; label: string }[] = [
-  { value: 'ALL', label: 'All' },
-  { value: 'TODO', label: 'Todo' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
-  { value: 'DONE', label: 'Done' },
-]
-
-const priorityOptions: { value: PriorityFilter; label: string }[] = [
-  { value: 'ALL', label: 'All' },
-  { value: 'LOW', label: priorityLabel('LOW') },
-  { value: 'MEDIUM', label: priorityLabel('MEDIUM') },
-  { value: 'HIGH', label: priorityLabel('HIGH') },
-]
+import { SearchOutlined } from '@ant-design/icons';
+import { Card, Col, Input, Row, Select, Typography } from 'antd';
+import { observer } from 'mobx-react-lite';
+import type { PriorityFilter, StatusFilter } from '../types/task';
+import { taskStore } from '../stores';
+import {
+  TASK_PRIORITY_FILTER_OPTIONS,
+  TASK_STATUS_FILTER_OPTIONS,
+} from '../constants';
 
 export const TaskFilters = observer(function TaskFilters() {
-  const { filters } = taskStore
+  const { filters } = taskStore;
 
   return (
     <Card
-      size="small"
-      title={<span className="font-heading font-semibold text-slate-800 dark:text-slate-100 tracking-tight">Filters</span>}
-      className="glass-card !border-0 mb-6"
+      size='small'
+      title={
+        <span className='font-heading font-semibold text-slate-800 dark:text-slate-100 tracking-tight'>
+          Filters
+        </span>
+      }
+      extra={
+        <Typography.Text type='secondary'>
+          Refine tasks without losing place on the page.
+        </Typography.Text>
+      }
+      className='glass-card !border-0 mb-6'
     >
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
-          <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+          <Typography.Text
+            type='secondary'
+            style={{ display: 'block', marginBottom: 8 }}
+          >
             Status
           </Typography.Text>
-          <Select
+          <Select<StatusFilter>
             style={{ width: '100%' }}
             value={filters.status}
-            options={statusOptions}
-            onChange={(v) => taskStore.setStatusFilter(v as StatusFilter)}
+            options={TASK_STATUS_FILTER_OPTIONS}
+            onChange={taskStore.setStatusFilter}
           />
         </Col>
         <Col xs={24} sm={8}>
-          <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+          <Typography.Text
+            type='secondary'
+            style={{ display: 'block', marginBottom: 8 }}
+          >
             Priority
           </Typography.Text>
-          <Select
+          <Select<PriorityFilter>
             style={{ width: '100%' }}
             value={filters.priority}
-            options={priorityOptions}
-            onChange={(v) => taskStore.setPriorityFilter(v as PriorityFilter)}
+            options={TASK_PRIORITY_FILTER_OPTIONS}
+            onChange={taskStore.setPriorityFilter}
           />
         </Col>
         <Col xs={24} sm={8}>
-          <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+          <Typography.Text
+            type='secondary'
+            style={{ display: 'block', marginBottom: 8 }}
+          >
             Search title (API)
           </Typography.Text>
           <Input
             allowClear
             prefix={<SearchOutlined />}
-            placeholder="Server-side search…"
+            placeholder='Server-side search…'
             value={filters.search}
             onChange={(e) => taskStore.setSearch(e.target.value)}
           />
         </Col>
       </Row>
     </Card>
-  )
-})
+  );
+});

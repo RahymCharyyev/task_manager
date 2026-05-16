@@ -14,19 +14,29 @@
   }
 
   body {
-    @apply m-0 antialiased bg-slate-50 text-slate-900;
+    @apply m-0 antialiased bg-linear-to-br from-slate-50 via-slate-100 to-white text-slate-900;
   }
 
   html.dark body {
-    @apply bg-[#0f172a] text-slate-100;
+    @apply bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100;
   }
 
   #root {
     @apply min-h-svh touch-manipulation flex flex-col;
   }
 
+  .glass-card {
+    @apply rounded-4xl bg-white/80 backdrop-blur-md border border-slate-200/60 shadow-sm transition-all duration-300 dark:bg-slate-800/60 dark:border-slate-700/50;
+  }
+
   /* Typography */
-  h1, h2, h3, h4, h5, h6, .font-heading {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
     font-family: 'Outfit', sans-serif;
   }
 
@@ -56,11 +66,32 @@
   }
 
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white border-none;
+    @apply bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 text-white border-none;
+  }
+
+  .task-card-animate {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: card-fade-in 260ms ease-out forwards;
+  }
+
+  @keyframes card-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .task-card-animate:hover {
+    transform: translateY(-1px);
   }
 
   /* Compositor-friendly motion; respect user preference */

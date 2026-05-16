@@ -1,7 +1,7 @@
 import { Form, Input, Modal, Select } from 'antd';
 import { useEffect } from 'react';
 import type { TaskPriority } from '../types/task';
-import { priorityLabel } from '../utils/labels';
+import { TASK_PRIORITY_OPTIONS } from '../constants';
 
 type CreateTaskModalProps = {
   open: boolean;
@@ -92,13 +92,7 @@ export function CreateTaskModal({
           <Input.TextArea rows={3} placeholder='Details for your team…' />
         </Form.Item>
         <Form.Item label='Priority' name='priority'>
-          <Select
-            options={[
-              { value: 'LOW', label: priorityLabel('LOW') },
-              { value: 'MEDIUM', label: priorityLabel('MEDIUM') },
-              { value: 'HIGH', label: priorityLabel('HIGH') },
-            ]}
-          />
+          <Select options={TASK_PRIORITY_OPTIONS} />
         </Form.Item>
         <Form.Item
           label='Assignee'
