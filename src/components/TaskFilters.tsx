@@ -24,7 +24,7 @@ export const TaskFilters = observer(function TaskFilters() {
           Refine tasks without losing place on the page.
         </Typography.Text>
       }
-      className='glass-card !border-0 mb-6'
+      className='glass-card border-0! mb-6'
     >
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>

@@ -23,7 +23,7 @@ const TaskListObserver = observer(function TaskListObserver({
       <Empty
         className='rounded-xl border border-dashed border-slate-300 bg-slate-50/60 py-14 dark:border-white/15 dark:bg-white/[0.04]'
         description='No tasks match the current filters.'
-        imageStyle={{ height: 80 }}
+        styles={{ image: { height: 80 } }}
       />
     );
   }

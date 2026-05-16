@@ -25,10 +25,6 @@
     @apply min-h-svh touch-manipulation flex flex-col;
   }
 
-  .glass-card {
-    @apply rounded-4xl bg-white/80 backdrop-blur-md border border-slate-200/60 shadow-sm transition-all duration-300 dark:bg-slate-800/60 dark:border-slate-700/50;
-  }
-
   /* Typography */
   h1,
   h2,

@@ -39,7 +39,7 @@ export function LoginPage() {
                 </span>
               }
               className='border-0 shadow-xl shadow-slate-900/15 ring-1 ring-slate-900/[0.07] dark:shadow-black/50 dark:ring-white/10'
-              bodyStyle={{ paddingTop: 24 }}
+              styles={{ body: { paddingTop: 24 } }}
             >
               <Typography.Paragraph
                 type='secondary'

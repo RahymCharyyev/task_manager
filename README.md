@@ -40,16 +40,38 @@ src/
   stores/        # authStore, taskStore, themeStore
   types/         # Task, filters, inputs
   utils/         # Date formatting, labels
+  test-utils.tsx # reusable render helpers for component tests
 ```
+
+## Architecture
+
+- `src/api` contains GraphQL request wrappers and domain mapping from `Todo` nodes to app `Task` objects.
+- `src/hooks` exposes query/mutation hooks that keep TanStack Query and MobX state in sync.
+- `src/stores` holds application state with MobX and provides derived state like filtered tasks.
+- `src/components` contains reusable UI pieces such as cards, filters, modals, and shared controls.
+- `src/pages` assembles pages from components and handles route-level flows.
+- `src/routes` contains application routing and protected route rules.
+- `src/utils` contains small helpers for formatting and display labels.
 
 ## Scripts
 
 ```bash
-npm run dev      # Vite dev server
-npm run build    # tsc + production bundle
-npm run preview  # Serve dist
-npm run lint     # ESLint
+npm run dev       # Vite dev server
+npm run build     # tsc + production bundle
+npm run preview   # Serve dist
+npm run lint      # ESLint
+npm run test      # Run Vitest suite
+npm run test:watch # Run Vitest in watch mode
 ```
+
+## Testing
+
+Testing is built with Vitest and React Testing Library. New coverage includes:
+
+- Unit tests for `taskStore`, `TaskCard`, `TaskFilters`, and `TaskList`
+- Integration tests for search/filter interactions and task creation UI
+- Global setup in `src/setupTests.ts`
+- Test utilities in `src/test-utils.tsx`
 
 ## Configuration
 

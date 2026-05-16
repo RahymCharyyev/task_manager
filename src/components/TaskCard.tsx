@@ -77,17 +77,19 @@ export const TaskCard = memo(function TaskCard({
     <Card
       size='small'
       hoverable
-      className='glass-card task-card-animate !border-0'
-      bodyStyle={{
-        paddingBottom: 12,
-        paddingTop: 16,
-        paddingLeft: 20,
-        paddingRight: 20,
+      className='glass-card task-card-animate border-0!'
+      styles={{
+        body: {
+          paddingBottom: 12,
+          paddingTop: 16,
+          paddingLeft: 20,
+          paddingRight: 20,
+        },
       }}
     >
       <Flex vertical gap='middle'>
         <Flex justify='space-between' align='flex-start' gap='middle' wrap>
-          <Space direction='vertical' size={4} style={{ minWidth: 0 }}>
+          <Space orientation='vertical' size={4} style={{ minWidth: 0 }}>
             <Space wrap align='center'>
               <Link
                 to={`/tasks/${task.id}`}
