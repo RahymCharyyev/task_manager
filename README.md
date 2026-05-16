@@ -1,75 +1,81 @@
-# React + TypeScript + Vite
+# Mini Task Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small **React + TypeScript** SPA that demonstrates a simplified issue/task workflow with **MobX**, **TanStack Query**, **GraphQL** (`graphql-request`), **React Router**, **Ant Design**, and **Tailwind CSS**.
 
-Currently, two official plugins are available:
+Live-ish data comes from **[GraphQLZero](https://graphqlzero.almansi.me)** (JSONPlaceholder-backed todos). Tasks in the UI are mapped from GraphQL `Todo` nodes (status, priority, and dates are partly derived or synthetic).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Mock auth** — email/password form stores a token in `sessionStorage`; protected routes.
+- **Task list** — GraphQL query, loading skeleton, error + retry.
+- **MobX** — `authStore`, `taskStore` with filters and computed `filteredTasks`.
+- **Mutations** — create / update (optimistic status) / delete with confirmations where appropriate.
+- **Task detail** — `/tasks/:id`.
+- **Theming** — light/dark via Ant Design `ConfigProvider` + Tailwind `dark:` (class on `<html>`), persisted as `tm_theme_mode`.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Tech Stack
 
-Note: This will impact Vite dev & build performances.
+| Area | Libraries |
+|------|-----------|
+| UI | React 19, Ant Design 6, Tailwind CSS 4 |
+| State | MobX 6, mobx-react-lite |
+| Server cache | TanStack Query 5 |
+| API | graphql, graphql-request |
+| Routing | react-router-dom 7 |
+| Build | Vite 8, TypeScript 6 |
 
-## Expanding the ESLint configuration
+React Compiler is enabled via `@vitejs/plugin-react` + `babel-plugin-react-compiler`.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Project Structure
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```txt
+src/
+  api/           # GraphQL callers & Todo → Task mapping
+  components/    # Filters, list, cards, modals, theme toggle, skip link
+  graphql/       # Operation strings & GraphQLClient
+  hooks/         # useTasksQuery, mutations (sync with MobX where needed)
+  layouts/       # Dashboard shell (sidebar + header)
+  pages/         # Login, dashboard, task detail
+  routes/        # AppRoutes + protected layout
+  stores/        # authStore, taskStore, themeStore
+  types/         # Task, filters, inputs
+  utils/         # Date formatting, labels
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev      # Vite dev server
+npm run build    # tsc + production bundle
+npm run preview  # Serve dist
+npm run lint     # ESLint
 ```
+
+## Configuration
+
+### GraphQL endpoint
+
+By default the client uses:
+
+`https://graphqlzero.almansi.me/api`
+
+Override with an env variable (e.g. `.env.local`):
+
+```bash
+VITE_GRAPHQLZERO_URL=https://your-proxy-or-api.example/graphql
+```
+
+**Note:** GraphQLZero is a public demo API. Create/update/delete affect shared data and IDs may not match a private backend.
+
+### Theme
+
+- Ant Design: `defaultAlgorithm` / `darkAlgorithm`.
+- Tailwind: `@custom-variant dark` targets `.dark` on `<html>` (set by `themeStore`).
+
+## Requirements
+
+- Node.js compatible with Vite 8 (modern LTS recommended).
+
+## License
+
+Private / demo project (`"private": true` in `package.json`).
