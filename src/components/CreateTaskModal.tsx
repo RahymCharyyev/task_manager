@@ -1,26 +1,26 @@
-import { Form, Input, Modal, Select } from 'antd'
-import { useEffect } from 'react'
-import type { TaskPriority } from '../types/task'
-import { priorityLabel } from '../utils/labels'
+import { Form, Input, Modal, Select } from 'antd';
+import { useEffect } from 'react';
+import type { TaskPriority } from '../types/task';
+import { priorityLabel } from '../utils/labels';
 
 type CreateTaskModalProps = {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
   onSubmit: (values: {
-    title: string
-    description: string
-    priority: TaskPriority
-    assignee: string
-  }) => Promise<void>
-  submitting?: boolean
-}
+    title: string;
+    description: string;
+    priority: TaskPriority;
+    assignee: string;
+  }) => Promise<void>;
+  submitting?: boolean;
+};
 
 type FormValues = {
-  title: string
-  description: string
-  priority: TaskPriority
-  assignee: string
-}
+  title: string;
+  description: string;
+  priority: TaskPriority;
+  assignee: string;
+};
 
 export function CreateTaskModal({
   open,
@@ -28,42 +28,47 @@ export function CreateTaskModal({
   onSubmit,
   submitting,
 }: CreateTaskModalProps) {
-  const [form] = Form.useForm<FormValues>()
+  const [form] = Form.useForm<FormValues>();
 
   useEffect(() => {
     if (open) {
-      form.resetFields()
+      form.resetFields();
     }
-  }, [open, form])
+  }, [open, form]);
 
   async function handleOk() {
-    const values = await form.validateFields()
-    await onSubmit(values)
-    form.resetFields()
+    const values = await form.validateFields();
+    await onSubmit(values);
+    form.resetFields();
   }
 
   return (
     <Modal
-      title={<span className="font-heading text-xl font-semibold gradient-text tracking-tight">Create Task</span>}
+      title={
+        <span className='font-heading text-xl font-semibold gradient-text tracking-tight'>
+          Create Task
+        </span>
+      }
       open={open}
       onCancel={() => {
-        if (!submitting) onClose()
+        if (!submitting) onClose();
       }}
-      okText="Create Task"
-      cancelText="Cancel"
+      okText='Create Task'
+      cancelText='Cancel'
       confirmLoading={submitting}
       onOk={() => void handleOk()}
       destroyOnHidden
       centered
-      wrapClassName="overscroll-behavior-contain"
+      wrapClassName='overscroll-behavior-contain'
       classNames={{
         mask: '!backdrop-blur-[3px]',
-        container: '!rounded-2xl !shadow-2xl shadow-slate-900/25 dark:!shadow-black/60',
+        container:
+          '!rounded-2xl !shadow-2xl shadow-slate-900/25 dark:!shadow-black/60',
       }}
     >
       <Form<FormValues>
         form={form}
-        layout="vertical"
+        layout='vertical'
         requiredMark={false}
         initialValues={{
           title: '',
@@ -73,20 +78,20 @@ export function CreateTaskModal({
         }}
       >
         <Form.Item
-          label="Title"
-          name="title"
+          label='Title'
+          name='title'
           rules={[{ required: true, message: 'Enter a title.' }]}
         >
-          <Input placeholder="Short summary…" />
+          <Input placeholder='Short summary…' />
         </Form.Item>
         <Form.Item
-          label="Description"
-          name="description"
+          label='Description'
+          name='description'
           rules={[{ required: true, message: 'Enter a description.' }]}
         >
-          <Input.TextArea rows={3} placeholder="Details for your team…" />
+          <Input.TextArea rows={3} placeholder='Details for your team…' />
         </Form.Item>
-        <Form.Item label="Priority" name="priority">
+        <Form.Item label='Priority' name='priority'>
           <Select
             options={[
               { value: 'LOW', label: priorityLabel('LOW') },
@@ -96,13 +101,13 @@ export function CreateTaskModal({
           />
         </Form.Item>
         <Form.Item
-          label="Assignee"
-          name="assignee"
+          label='Assignee'
+          name='assignee'
           rules={[{ required: true, message: 'Enter an assignee.' }]}
         >
-          <Input placeholder="Name or handle…" />
+          <Input placeholder='Name or handle…' />
         </Form.Item>
       </Form>
     </Modal>
-  )
+  );
 }

@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { SkipToMain } from '../components/SkipToMain'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { AppLogo } from '../components/AppLogo'
 import { authStore } from '../stores/authStore'
 
 const { Header, Sider, Content } = Layout
@@ -42,16 +43,7 @@ export const DashboardLayout = observer(function DashboardLayout() {
           className="flex flex-col glass z-10 border-e border-white/20 dark:border-white/10"
         >
           <div className="px-5 pt-6 pb-4">
-            <Typography.Text className="font-heading font-bold tracking-widest text-indigo-500 dark:text-indigo-400" style={{ fontSize: 13 }}>
-              MINI TASKS
-            </Typography.Text>
-            <Typography.Paragraph
-              ellipsis
-              style={{ marginBottom: 0, marginTop: token.marginXS }}
-              strong
-            >
-              {authStore.user?.email ?? '—'}
-            </Typography.Paragraph>
+            <AppLogo />
           </div>
           <div className="min-h-0 flex-1">
             <Menu

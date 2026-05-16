@@ -1,37 +1,34 @@
-import { PlusOutlined } from '@ant-design/icons'
-import {
-  Alert,
-  Button,
-  Flex,
-  Modal,
-  Pagination,
-  Typography,
-} from 'antd'
-import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
+import { PlusOutlined } from '@ant-design/icons';
+import { Alert, Button, Flex, Modal, Pagination, Typography } from 'antd';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import {
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useTasksQuery,
   useUpdateTaskMutation,
-} from '../hooks/useTaskQueries'
-import type { Task, TaskStatus } from '../types/task'
-import { TaskFilters } from '../components/TaskFilters'
-import { TaskList } from '../components/TaskList'
-import { TaskListSkeleton } from '../components/TaskListSkeleton'
-import { CreateTaskModal } from '../components/CreateTaskModal'
-import { taskStore } from '../stores/taskStore'
+} from '../hooks/useTaskQueries';
+import type { Task, TaskStatus } from '../types/task';
+import { TaskFilters } from '../components/TaskFilters';
+import { TaskList } from '../components/TaskList';
+import { TaskListSkeleton } from '../components/TaskListSkeleton';
+import { CreateTaskModal } from '../components/CreateTaskModal';
+import { taskStore } from '../stores/taskStore';
 
 export const DashboardPage = observer(function DashboardPage() {
-  const { listPage, pageSize, filters: { search } } = taskStore
-  const tasksQuery = useTasksQuery(listPage, pageSize, search.trim())
-  const createMutation = useCreateTaskMutation()
-  const updateMutation = useUpdateTaskMutation()
-  const deleteMutation = useDeleteTaskMutation()
-  const [modalOpen, setModalOpen] = useState(false)
+  const {
+    listPage,
+    pageSize,
+    filters: { search },
+  } = taskStore;
+  const tasksQuery = useTasksQuery(listPage, pageSize, search.trim());
+  const createMutation = useCreateTaskMutation();
+  const updateMutation = useUpdateTaskMutation();
+  const deleteMutation = useDeleteTaskMutation();
+  const [modalOpen, setModalOpen] = useState(false);
 
   function handleStatusChange(id: string, status: TaskStatus) {
-    updateMutation.mutate({ id, status })
+    updateMutation.mutate({ id, status });
   }
 
   function handleDelete(task: Task) {
@@ -42,29 +39,32 @@ export const DashboardPage = observer(function DashboardPage() {
       okType: 'danger',
       cancelText: 'Cancel',
       onOk: () => deleteMutation.mutateAsync(task.id),
-    })
+    });
   }
 
-  const showSkeleton = tasksQuery.isPending && !tasksQuery.data
+  const showInitialSkeleton =
+    tasksQuery.isPending && tasksQuery.data === undefined;
+  const showPageSkeleton =
+    tasksQuery.isFetching && tasksQuery.isPlaceholderData;
+  const showSkeleton = showInitialSkeleton || showPageSkeleton;
 
-  const total =
-    tasksQuery.data?.totalCount ?? taskStore.totalCount
+  const total = tasksQuery.data?.totalCount ?? taskStore.totalCount;
   const showPagination =
-    tasksQuery.isSuccess && !tasksQuery.isError && total > 0
+    tasksQuery.isSuccess && !tasksQuery.isError && total > 0;
 
   return (
-    <Flex vertical gap="large" className="mx-auto w-full max-w-5xl">
-      <Flex justify="space-between" align="flex-start" gap="middle" wrap>
+    <Flex vertical gap='large' className='mx-auto w-full max-w-5xl'>
+      <Flex justify='space-between' align='flex-start' gap='middle' wrap>
         <Typography.Paragraph
-          type="secondary"
-          className="max-w-prose text-pretty text-base opacity-80"
+          type='secondary'
+          className='max-w-prose text-pretty text-base opacity-80'
           style={{ marginBottom: 0 }}
         >
           Data from{' '}
           <Typography.Link
-            href="https://graphqlzero.almansi.me"
-            target="_blank"
-            rel="noreferrer"
+            href='https://graphqlzero.almansi.me'
+            target='_blank'
+            rel='noreferrer'
           >
             GraphQLZero
           </Typography.Link>{' '}
@@ -72,9 +72,9 @@ export const DashboardPage = observer(function DashboardPage() {
           priority filters apply to the tasks on the current page (MobX).
         </Typography.Paragraph>
         <Button
-          type="primary"
-          size="large"
-          className="gradient-bg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-300 font-semibold"
+          type='primary'
+          size='large'
+          className='gradient-bg shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-300 font-semibold'
           icon={
             <span aria-hidden>
               <PlusOutlined />
@@ -90,22 +90,22 @@ export const DashboardPage = observer(function DashboardPage() {
 
       {tasksQuery.isError ? (
         <Alert
-          type="error"
+          type='error'
           showIcon
-          className="shadow-sm ring-1 ring-red-500/15 dark:ring-red-400/20"
+          className='shadow-sm ring-1 ring-red-500/15 dark:ring-red-400/20'
           message={
             tasksQuery.error instanceof Error
               ? tasksQuery.error.message
               : 'Could not load tasks. Check your connection and try again.'
           }
           action={
-            <Button size="small" onClick={() => void tasksQuery.refetch()}>
+            <Button size='small' onClick={() => void tasksQuery.refetch()}>
               Retry
             </Button>
           }
         />
       ) : showSkeleton ? (
-        <TaskListSkeleton />
+        <TaskListSkeleton rows={taskStore.pageSize} />
       ) : (
         <>
           <TaskList
@@ -118,7 +118,7 @@ export const DashboardPage = observer(function DashboardPage() {
             }
           />
           {showPagination ? (
-            <Flex justify="flex-end" wrap className="gap-3">
+            <Flex justify='flex-end' wrap className='gap-3'>
               <Pagination
                 current={taskStore.listPage}
                 pageSize={taskStore.pageSize}
@@ -130,9 +130,9 @@ export const DashboardPage = observer(function DashboardPage() {
                 }
                 onChange={(page, pageSize) => {
                   if (pageSize !== taskStore.pageSize) {
-                    taskStore.setPageSize(pageSize)
+                    taskStore.setPageSize(pageSize);
                   } else {
-                    taskStore.setListPage(page)
+                    taskStore.setListPage(page);
                   }
                 }}
               />
@@ -146,10 +146,10 @@ export const DashboardPage = observer(function DashboardPage() {
         onClose={() => setModalOpen(false)}
         submitting={createMutation.isPending}
         onSubmit={async (values) => {
-          await createMutation.mutateAsync(values)
-          setModalOpen(false)
+          await createMutation.mutateAsync(values);
+          setModalOpen(false);
         }}
       />
     </Flex>
-  )
-})
+  );
+});
