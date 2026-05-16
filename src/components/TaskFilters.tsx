@@ -53,12 +53,12 @@ export const TaskFilters = observer(function TaskFilters() {
         </Col>
         <Col xs={24} sm={8}>
           <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
-            Search title
+            Search title (API)
           </Typography.Text>
           <Input
             allowClear
             prefix={<SearchOutlined />}
-            placeholder="Filter by title…"
+            placeholder="Server-side search…"
             value={filters.search}
             onChange={(e) => taskStore.setSearch(e.target.value)}
           />

@@ -27,7 +27,34 @@ export interface GqlTodo {
 }
 
 interface GetTodosQueryResult {
-  todos: { data: GqlTodo[] }
+  todos: { data: GqlTodo[]; meta: { totalCount: number | null } | null }
+}
+
+export interface TasksPageResult {
+  tasks: Task[]
+  totalCount: number
+}
+
+/** Variables for GraphQLZero todos(options: PageQueryOptions). */
+export interface FetchTasksPageParams {
+  page: number
+  pageSize: number
+  /** Passed as `search.q`; omit when empty */
+  search?: string
+}
+
+function buildPageQueryOptions(params: FetchTasksPageParams): Record<
+  string,
+  unknown
+> {
+  const options: Record<string, unknown> = {
+    paginate: { page: params.page, limit: params.pageSize },
+  }
+  const q = params.search?.trim()
+  if (q) {
+    options.search = { q }
+  }
+  return options
 }
 
 interface GetTodoQueryResult {
@@ -114,13 +141,24 @@ function buildGqlUpdateTodoPayload(
   return gql
 }
 
-export async function fetchTasks(): Promise<Task[]> {
-  const data = await graphqlClient.request<GetTodosQueryResult>(
-    GET_TASKS_QUERY,
-  )
-  return data.todos.data
+export async function fetchTasksPage(
+  params: FetchTasksPageParams,
+): Promise<TasksPageResult> {
+  const data = await graphqlClient.request<
+    GetTodosQueryResult,
+    { options: Record<string, unknown> }
+  >(GET_TASKS_QUERY, { options: buildPageQueryOptions(params) })
+
+  const tasks = data.todos.data
     .map(todoToTask)
     .filter((t): t is Task => t !== null)
+
+  const totalCount = data.todos.meta?.totalCount ?? 0
+
+  return {
+    tasks,
+    totalCount,
+  }
 }
 
 export async function fetchTaskById(id: string): Promise<Task | null> {

@@ -1,8 +1,8 @@
 /** GraphQLZero (JSONPlaceholder) — документация: https://graphqlzero.almansi.me */
 
 export const GET_TASKS_QUERY = /* GraphQL */ `
-  query GetTasks {
-    todos {
+  query GetTasks($options: PageQueryOptions) {
+    todos(options: $options) {
       data {
         id
         title
@@ -12,6 +12,9 @@ export const GET_TASKS_QUERY = /* GraphQL */ `
           name
           email
         }
+      }
+      meta {
+        totalCount
       }
     }
   }

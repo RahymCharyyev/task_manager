@@ -10,6 +10,12 @@ export const queryClient = new QueryClient({
 })
 
 export const queryKeys = {
-  tasks: ['tasks'] as const,
+  tasksRoot: ['tasks'] as const,
+  tasksList: (params: {
+    page: number
+    pageSize: number
+    search: string
+  }) =>
+    ['tasks', 'list', params.page, params.pageSize, params.search] as const,
   task: (id: string) => ['task', id] as const,
 }

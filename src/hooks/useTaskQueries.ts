@@ -4,21 +4,35 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import type { TasksPageResult } from '../api/tasks'
 import type { Task } from '../types/task'
 import {
   createTask,
   deleteTask,
   fetchTaskById,
-  fetchTasks,
+  fetchTasksPage,
   updateTask,
 } from '../api/tasks'
 import { queryKeys } from '../queryClient'
 import { taskStore } from '../stores/taskStore'
 
+function tasksListQueryKey() {
+  return queryKeys.tasksList({
+    page: taskStore.listPage,
+    pageSize: taskStore.pageSize,
+    search: taskStore.filters.search.trim(),
+  })
+}
+
 export function useTasksQuery() {
+  const page = taskStore.listPage
+  const pageSize = taskStore.pageSize
+  const search = taskStore.filters.search.trim()
+
   const query = useQuery({
-    queryKey: queryKeys.tasks,
-    queryFn: fetchTasks,
+    queryKey: queryKeys.tasksList({ page, pageSize, search }),
+    queryFn: () => fetchTasksPage({ page, pageSize, search }),
+    placeholderData: (previousData) => previousData,
   })
 
   useEffect(() => {
@@ -33,7 +47,8 @@ export function useTasksQuery() {
 
   useEffect(() => {
     if (query.data) {
-      taskStore.setTasks(query.data)
+      taskStore.setTasks(query.data.tasks)
+      taskStore.setTotalCount(query.data.totalCount)
     }
   }, [query.data])
 
@@ -53,7 +68,7 @@ export function useCreateTaskMutation() {
   return useMutation({
     mutationFn: createTask,
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: queryKeys.tasks })
+      void qc.invalidateQueries({ queryKey: queryKeys.tasksRoot })
     },
   })
 }
@@ -63,10 +78,14 @@ export function useUpdateTaskMutation() {
   return useMutation({
     mutationFn: updateTask,
     onMutate: async (input) => {
-      await qc.cancelQueries({ queryKey: queryKeys.tasks })
+      await qc.cancelQueries({ queryKey: queryKeys.tasksRoot })
 
-      const prevTasks =
-        qc.getQueryData<Task[]>(queryKeys.tasks) ?? [...taskStore.tasks]
+      const listKey = tasksListQueryKey()
+      const prevPageData: TasksPageResult =
+        qc.getQueryData<TasksPageResult>(listKey) ?? {
+          tasks: [...taskStore.tasks],
+          totalCount: taskStore.totalCount,
+        }
       const prevDetail =
         qc.getQueryData<Task>(queryKeys.task(input.id)) ?? undefined
 
@@ -81,9 +100,14 @@ export function useUpdateTaskMutation() {
         ...(input.assignee !== undefined ? { assignee: input.assignee } : {}),
       })
 
-      qc.setQueryData<Task[]>(queryKeys.tasks, (old) => {
-        const base = old ?? prevTasks
-        return base.map((t) => (t.id === input.id ? merge(t) : t))
+      qc.setQueryData<TasksPageResult>(listKey, (old) => {
+        const base = old ?? prevPageData
+        return {
+          ...base,
+          tasks: base.tasks.map((t) =>
+            t.id === input.id ? merge(t) : t,
+          ),
+        }
       })
 
       qc.setQueryData<Task | null>(queryKeys.task(input.id), (old) => {
@@ -92,17 +116,19 @@ export function useUpdateTaskMutation() {
       })
 
       const base =
-        prevTasks.find((x) => x.id === input.id) ?? prevDetail ?? null
+        prevPageData.tasks.find((x) => x.id === input.id) ??
+        prevDetail ??
+        null
       if (base) {
         taskStore.patchTask(input.id, merge(base))
       }
 
-      return { prevTasks, prevDetail }
+      return { prevPageData, prevDetail, listKey }
     },
     onError: (_err, input, ctx) => {
-      if (ctx?.prevTasks) {
-        qc.setQueryData(queryKeys.tasks, ctx.prevTasks)
-        taskStore.setTasks(ctx.prevTasks)
+      if (ctx?.prevPageData && ctx.listKey) {
+        qc.setQueryData(ctx.listKey, ctx.prevPageData)
+        taskStore.setTasks(ctx.prevPageData.tasks)
       }
       if (ctx?.prevDetail !== undefined) {
         qc.setQueryData(queryKeys.task(input.id), ctx.prevDetail)
@@ -110,7 +136,7 @@ export function useUpdateTaskMutation() {
       }
     },
     onSettled: (_data, _err, vars) => {
-      void qc.invalidateQueries({ queryKey: queryKeys.tasks })
+      void qc.invalidateQueries({ queryKey: queryKeys.tasksRoot })
       void qc.invalidateQueries({ queryKey: queryKeys.task(vars.id) })
     },
   })
@@ -122,7 +148,7 @@ export function useDeleteTaskMutation() {
     mutationFn: deleteTask,
     onSuccess: (_deleted, taskId) => {
       qc.removeQueries({ queryKey: queryKeys.task(taskId) })
-      void qc.invalidateQueries({ queryKey: queryKeys.tasks })
+      void qc.invalidateQueries({ queryKey: queryKeys.tasksRoot })
     },
   })
 }

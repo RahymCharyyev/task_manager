@@ -4,8 +4,10 @@ import {
   Button,
   Flex,
   Modal,
+  Pagination,
   Typography,
 } from 'antd'
+import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import {
   useCreateTaskMutation,
@@ -18,8 +20,9 @@ import { TaskFilters } from '../components/TaskFilters'
 import { TaskList } from '../components/TaskList'
 import { TaskListSkeleton } from '../components/TaskListSkeleton'
 import { CreateTaskModal } from '../components/CreateTaskModal'
+import { taskStore } from '../stores/taskStore'
 
-export function DashboardPage() {
+export const DashboardPage = observer(function DashboardPage() {
   const tasksQuery = useTasksQuery()
   const createMutation = useCreateTaskMutation()
   const updateMutation = useUpdateTaskMutation()
@@ -43,6 +46,11 @@ export function DashboardPage() {
 
   const showSkeleton = tasksQuery.isPending && !tasksQuery.data
 
+  const total =
+    tasksQuery.data?.totalCount ?? taskStore.totalCount
+  const showPagination =
+    tasksQuery.isSuccess && !tasksQuery.isError && total > 0
+
   return (
     <Flex vertical gap="large" className="mx-auto w-full max-w-5xl">
       <Flex justify="space-between" align="flex-start" gap="middle" wrap>
@@ -59,7 +67,8 @@ export function DashboardPage() {
           >
             GraphQLZero
           </Typography.Link>{' '}
-          (todos). Filters use MobX computed state.
+          (todos): paginated list and title search use the API; status and
+          priority filters apply to the tasks on the current page (MobX).
         </Typography.Paragraph>
         <Button
           type="primary"
@@ -95,15 +104,38 @@ export function DashboardPage() {
       ) : showSkeleton ? (
         <TaskListSkeleton />
       ) : (
-        <TaskList
-          onStatusChange={handleStatusChange}
-          onDelete={handleDelete}
-          updatingId={
-            updateMutation.isPending && updateMutation.variables?.id
-              ? updateMutation.variables.id
-              : null
-          }
-        />
+        <>
+          <TaskList
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            updatingId={
+              updateMutation.isPending && updateMutation.variables?.id
+                ? updateMutation.variables.id
+                : null
+            }
+          />
+          {showPagination ? (
+            <Flex justify="flex-end" wrap className="gap-3">
+              <Pagination
+                current={taskStore.listPage}
+                pageSize={taskStore.pageSize}
+                total={total}
+                showSizeChanger
+                pageSizeOptions={[5, 10, 20, 50]}
+                showTotal={(itemTotal, range) =>
+                  `${range[0]}–${range[1]} of ${itemTotal}`
+                }
+                onChange={(page, pageSize) => {
+                  if (pageSize !== taskStore.pageSize) {
+                    taskStore.setPageSize(pageSize)
+                  } else {
+                    taskStore.setListPage(page)
+                  }
+                }}
+              />
+            </Flex>
+          ) : null}
+        </>
       )}
 
       <CreateTaskModal
@@ -117,4 +149,4 @@ export function DashboardPage() {
       />
     </Flex>
   )
-}
+})

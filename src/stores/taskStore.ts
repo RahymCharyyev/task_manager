@@ -15,6 +15,12 @@ const defaultFilters: TaskFiltersState = {
 export class TaskStore {
   tasks: Task[] = []
   filters: TaskFiltersState = { ...defaultFilters }
+  /** Current page (1-based) for server-side pagination */
+  listPage = 1
+  /** Page size for GraphQLZero `paginate.limit` */
+  pageSize = 10
+  /** Total matching todos from API (`meta.totalCount`), including search */
+  totalCount = 0
   listLoading = false
   listError: string | null = null
 
@@ -46,14 +52,35 @@ export class TaskStore {
 
   setStatusFilter(status: StatusFilter) {
     this.filters = { ...this.filters, status }
+    this.listPage = 1
   }
 
   setPriorityFilter(priority: PriorityFilter) {
     this.filters = { ...this.filters, priority }
+    this.listPage = 1
   }
 
   setSearch(search: string) {
     this.filters = { ...this.filters, search }
+    this.listPage = 1
+  }
+
+  setListPage(page: number) {
+    this.listPage = page
+  }
+
+  setPageSize(size: number) {
+    this.pageSize = size
+    this.listPage = 1
+  }
+
+  setTotalCount(total: number) {
+    this.totalCount = total
+    const maxPage =
+      total === 0 ? 1 : Math.max(1, Math.ceil(total / this.pageSize))
+    if (this.listPage > maxPage) {
+      this.listPage = maxPage
+    }
   }
 
   setListLoading(loading: boolean) {
