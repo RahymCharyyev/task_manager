@@ -1,12 +1,13 @@
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  DeleteOutlined,
+  MinusCircleOutlined,
+} from '@ant-design/icons'
+import type { MenuProps } from 'antd'
+import { Button, Card, Descriptions, Dropdown, Flex, Space, Tag, Typography } from 'antd'
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Card, Descriptions, Flex, Dropdown, Space, Tag, Typography } from 'antd'
-import { 
-  DeleteOutlined, 
-  CheckCircleOutlined, 
-  ClockCircleOutlined, 
-  MinusCircleOutlined 
-} from '@ant-design/icons'
 import type { Task, TaskPriority, TaskStatus } from '../types/task'
 import { formatDateTime } from '../utils/formatDate'
 import { priorityLabel, statusLabel } from '../utils/labels'
@@ -17,6 +18,25 @@ const priorityColors: Record<TaskPriority, string> = {
   HIGH: 'red',
 }
 
+/** Static dropdown items — stable identity for Dropdown (Vercel: hoist JSX/config). */
+const TASK_STATUS_MENU_ITEMS: MenuProps['items'] = [
+  {
+    key: 'TODO',
+    icon: <MinusCircleOutlined />,
+    label: statusLabel('TODO'),
+  },
+  {
+    key: 'IN_PROGRESS',
+    icon: <ClockCircleOutlined />,
+    label: statusLabel('IN_PROGRESS'),
+  },
+  {
+    key: 'DONE',
+    icon: <CheckCircleOutlined />,
+    label: statusLabel('DONE'),
+  },
+]
+
 type TaskCardProps = {
   task: Task
   onStatusChange: (id: string, status: TaskStatus) => void
@@ -24,11 +44,15 @@ type TaskCardProps = {
   statusBusy?: boolean
 }
 
-const StatusIcon = ({ status }: { status: TaskStatus }) => {
-  if (status === 'DONE') return <CheckCircleOutlined className="text-emerald-500" />
-  if (status === 'IN_PROGRESS') return <ClockCircleOutlined className="text-amber-500" />
+const StatusIcon = memo(function StatusIcon({ status }: { status: TaskStatus }) {
+  if (status === 'DONE') {
+    return <CheckCircleOutlined className="text-emerald-500" />
+  }
+  if (status === 'IN_PROGRESS') {
+    return <ClockCircleOutlined className="text-amber-500" />
+  }
   return <MinusCircleOutlined className="text-slate-400" />
-}
+})
 
 export const TaskCard = memo(function TaskCard({
   task,
@@ -41,7 +65,14 @@ export const TaskCard = memo(function TaskCard({
       size="small"
       hoverable
       className="glass-card !border-0"
-      styles={{ body: { paddingBottom: 12, paddingTop: 16, paddingLeft: 20, paddingRight: 20 } }}
+      styles={{
+        body: {
+          paddingBottom: 12,
+          paddingTop: 16,
+          paddingLeft: 20,
+          paddingRight: 20,
+        },
+      }}
     >
       <Flex vertical gap="middle">
         <Flex justify="space-between" align="flex-start" gap="middle" wrap>
@@ -70,31 +101,30 @@ export const TaskCard = memo(function TaskCard({
               disabled={statusBusy}
               trigger={['click']}
               menu={{
-                items: [
-                  { key: 'TODO', icon: <MinusCircleOutlined />, label: statusLabel('TODO') },
-                  { key: 'IN_PROGRESS', icon: <ClockCircleOutlined />, label: statusLabel('IN_PROGRESS') },
-                  { key: 'DONE', icon: <CheckCircleOutlined />, label: statusLabel('DONE') },
-                ],
-                onClick: ({ key }) => onStatusChange(task.id, key as TaskStatus),
+                items: TASK_STATUS_MENU_ITEMS,
+                onClick: ({ key }) =>
+                  onStatusChange(task.id, key as TaskStatus),
               }}
             >
-              <Button 
-                type="text" 
-                size="middle" 
-                loading={statusBusy} 
+              <Button
+                type="text"
+                size="middle"
+                loading={statusBusy}
                 icon={<StatusIcon status={task.status} />}
                 className="hover:bg-slate-100 dark:hover:bg-slate-800"
               >
-                <span className="hidden sm:inline font-medium">{statusLabel(task.status)}</span>
+                <span className="hidden sm:inline font-medium">
+                  {statusLabel(task.status)}
+                </span>
               </Button>
             </Dropdown>
-            
-            <Button 
-              danger 
-              type="text" 
-              size="middle" 
-              icon={<DeleteOutlined />} 
-              onClick={() => onDelete(task)} 
+
+            <Button
+              danger
+              type="text"
+              size="middle"
+              icon={<DeleteOutlined />}
+              onClick={() => onDelete(task)}
               className="hover:bg-red-50 dark:hover:bg-red-950/30"
               title="Delete Task"
             />

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Empty, Flex } from 'antd'
 import { observer } from 'mobx-react-lite'
 import type { Task, TaskStatus } from '../types/task'
@@ -10,7 +11,7 @@ type TaskListProps = {
   updatingId?: string | null
 }
 
-export const TaskList = observer(function TaskList({
+const TaskListObserver = observer(function TaskListObserver({
   onStatusChange,
   onDelete,
   updatingId,
@@ -41,3 +42,6 @@ export const TaskList = observer(function TaskList({
     </Flex>
   )
 })
+
+/** `memo` avoids parent-driven re-renders; `observer` subscribes to MobX. */
+export const TaskList = memo(TaskListObserver)

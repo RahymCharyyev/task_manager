@@ -56,7 +56,7 @@ export function CreateTaskModal({
       okText='Create Task'
       cancelText='Cancel'
       confirmLoading={submitting}
-      onOk={() => void handleOk()}
+      onOk={() => handleOk()}
       destroyOnHidden
       centered
       wrapClassName='overscroll-behavior-contain'
